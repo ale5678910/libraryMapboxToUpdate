@@ -16,6 +16,7 @@ class CustomInfoPanelEndNavButtonBinder(
     val activity: Activity
 ) : UIBinder {
     override fun bind(viewGroup: ViewGroup): MapboxNavigationObserver {
+
         val button = MapboxExtendableButton(
             viewGroup.context,
             null,

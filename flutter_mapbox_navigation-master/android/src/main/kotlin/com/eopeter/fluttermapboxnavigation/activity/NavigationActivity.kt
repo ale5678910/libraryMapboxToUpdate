@@ -4,10 +4,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
-
-import org.json.JSONObject
 import androidx.appcompat.app.AppCompatActivity
 import com.eopeter.fluttermapboxnavigation.FlutterMapboxNavigationPlugin
 import com.eopeter.fluttermapboxnavigation.R
@@ -25,8 +24,8 @@ import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
-import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
+import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
 import com.mapbox.navigation.base.extensions.applyLanguageAndVoiceUnitOptions
@@ -48,7 +47,10 @@ import com.mapbox.navigation.core.trip.session.RouteProgressObserver
 import com.mapbox.navigation.core.trip.session.VoiceInstructionsObserver
 import com.mapbox.navigation.dropin.map.MapViewObserver
 import com.mapbox.navigation.dropin.navigationview.NavigationViewListener
+import com.mapbox.navigation.ui.maps.route.line.model.RouteLineColorResources
+import com.mapbox.navigation.ui.maps.route.line.model.RouteLineResources
 import com.mapbox.navigation.utils.internal.ifNonNull
+import org.json.JSONObject
 
 class NavigationActivity : AppCompatActivity() {
     private var finishBroadcastReceiver: BroadcastReceiver? = null
@@ -92,6 +94,14 @@ class NavigationActivity : AppCompatActivity() {
         accessToken =
             PluginUtilities.getResourceFromContext(this.applicationContext, "mapbox_access_token")
 
+        val customColorResources = RouteLineColorResources.Builder()
+            .routeDefaultColor(Color.parseColor("#FFCC00"))
+            .build()
+
+        val routeLineResources = RouteLineResources.Builder()
+            .routeLineColorResources(customColorResources)
+            .build()
+
         val navigationOptions = NavigationOptions.Builder(this.applicationContext)
             .accessToken(accessToken)
             .build()
@@ -112,9 +122,15 @@ class NavigationActivity : AppCompatActivity() {
         }
         val act = this
         // Add custom view binders
+        binding.navigationView.customizeViewOptions {
+            //showTripProgress = false
+            showEndNavigationButton = false
+        }
+
         binding.navigationView.customizeViewBinders {
             infoPanelEndNavigationButtonBinder =
                 CustomInfoPanelEndNavButtonBinder(act)
+            //infoPanelTripProgressBinder = CustomInfoPanelTripProgressBinder(act)
         }
 
         MapboxNavigationApp.current()?.registerBannerInstructionsObserver(this.bannerInstructionObserver)
