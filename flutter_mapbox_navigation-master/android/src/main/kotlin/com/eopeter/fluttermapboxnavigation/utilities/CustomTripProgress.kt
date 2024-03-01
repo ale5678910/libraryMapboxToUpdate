@@ -1,14 +1,14 @@
 package com.eopeter.fluttermapboxnavigation.utilities
 
-import android.app.Activity
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.transition.Fade
+import androidx.transition.Scene
+import androidx.transition.TransitionManager
 import com.mapbox.navigation.base.formatter.DistanceFormatterOptions
 import com.mapbox.navigation.core.MapboxNavigation
 import com.mapbox.navigation.core.internal.extensions.flowRouteProgress
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationObserver
-import com.mapbox.navigation.dropin.R
-import com.mapbox.navigation.dropin.internal.extensions.updateMargins
 import com.mapbox.navigation.ui.base.lifecycle.UIBinder
 import com.mapbox.navigation.ui.base.lifecycle.UIComponent
 import com.mapbox.navigation.ui.tripprogress.api.MapboxTripProgressApi
@@ -16,35 +16,28 @@ import com.mapbox.navigation.ui.tripprogress.model.DistanceRemainingFormatter
 import com.mapbox.navigation.ui.tripprogress.model.EstimatedTimeToArrivalFormatter
 import com.mapbox.navigation.ui.tripprogress.model.TimeRemainingFormatter
 import com.mapbox.navigation.ui.tripprogress.model.TripProgressUpdateFormatter
-import com.mapbox.navigation.ui.tripprogress.view.MapboxTripProgressView
 
-class CustomInfoPanelTripProgressBinder(val activity: Activity) : UIBinder {
-    override fun bind(viewGroup: ViewGroup): MapboxNavigationObserver {
-
-        val trip = MapboxTripProgressView(
-            viewGroup.context,
-            null,
-            R.style.MapboxStyleTripProgressView
-        )
-
+/*class CustomTripProgress(
+    private val binding: MapboxTripProgressCustomLayoutBinding
+) : UIComponent() {
+    override fun onAttached(mapboxNavigation: MapboxNavigation) {
+        super.onAttached(mapboxNavigation)
         val distanceFormatterOptions =
-            DistanceFormatterOptions.Builder(activity).build()
-
+            DistanceFormatterOptions.Builder(binding.root.context).build()
         val tripProgressFormatter = TripProgressUpdateFormatter
-            .Builder(activity)
+            .Builder(binding.root.context)
             .distanceRemainingFormatter(
                 DistanceRemainingFormatter(distanceFormatterOptions)
             )
             .timeRemainingFormatter(
-                TimeRemainingFormatter(activity)
+                TimeRemainingFormatter(binding.root.context)
             )
             .estimatedTimeToArrivalFormatter(
-                EstimatedTimeToArrivalFormatter(activity)
+                EstimatedTimeToArrivalFormatter(binding.root.context)
             )
             .build()
         val tripProgressApi = MapboxTripProgressApi(tripProgressFormatter)
-
-        /*coroutineScope.launch {
+        coroutineScope.launch {
             mapboxNavigation.flowRouteProgress().collect {
                 val value = tripProgressApi.getTripProgress(it)
                 binding.distanceRemaining.setText(
@@ -63,17 +56,24 @@ class CustomInfoPanelTripProgressBinder(val activity: Activity) : UIBinder {
                 )
                 binding.tripProgress.progress = (value.percentRouteTraveled * 100).toInt()
             }
-        }*/
-
-        //viewGroup.removeAllViews()
-        viewGroup.addView(trip)
-        trip.updateMargins(left = 400)
-        return object : UIComponent() {
-                override fun onAttached(mapboxNavigation: MapboxNavigation) {
-                super.onAttached(mapboxNavigation)
-
+        }
+        coroutineScope.launch {
+            mapboxNavigation.flowRouteProgress().collect {
             }
         }
     }
-
 }
+
+class MyTripProgressViewBinder : UIBinder {
+    override fun bind(viewGroup: ViewGroup): MapboxNavigationObserver {
+        val scene = Scene.getSceneForLayout(
+            viewGroup,
+            R.layout.mapbox_trip_progress_custom_layout,
+            viewGroup.context
+        )
+        TransitionManager.go(scene, Fade())
+
+        val binding = MapboxTripProgressCustomLayoutBinding.bind(viewGroup)
+        return CustomTripProgress(binding)
+    }
+}*/

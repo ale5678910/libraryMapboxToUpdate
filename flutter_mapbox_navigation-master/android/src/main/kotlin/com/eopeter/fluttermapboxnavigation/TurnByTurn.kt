@@ -157,11 +157,11 @@ open class TurnByTurn(
                     }
                     this@TurnByTurn.binding.navigationView.customizeViewOptions {
                         //showTripProgress = false
-                        showEndNavigationButton = false
+                        //showEndNavigationButton = false
                     }
                     this@TurnByTurn.binding.navigationView.customizeViewBinders {
                         this.infoPanelEndNavigationButtonBinder = CustomInfoPanelEndNavButtonBinder(activity)
-                        //this.infoPanelTripProgressBinder = CustomInfoPanelTripProgressBinder(activity)
+                        this.infoPanelTripProgressBinder = CustomInfoPanelTripProgressBinder(activity)
                     }
                 }
 
