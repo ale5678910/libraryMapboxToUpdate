@@ -10,6 +10,8 @@ import androidx.transition.TransitionManager
 import com.eopeter.fluttermapboxnavigation.R
 import com.eopeter.fluttermapboxnavigation.databinding.MapboxActivityCustomizeTripProgressBinding
 import com.eopeter.fluttermapboxnavigation.databinding.MapboxTripProgressCustomLayoutBinding
+import com.eopeter.fluttermapboxnavigation.models.MapBoxEvents
+import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import com.mapbox.navigation.base.formatter.DistanceFormatterOptions
 import com.mapbox.navigation.core.MapboxNavigation
 import com.mapbox.navigation.core.internal.extensions.flowRouteProgress
@@ -23,21 +25,6 @@ import com.mapbox.navigation.ui.tripprogress.model.TimeRemainingFormatter
 import com.mapbox.navigation.ui.tripprogress.model.TripProgressUpdateFormatter
 import kotlinx.coroutines.launch
 
-/**
- * The example demonstrates how to use design a custom trip progress view and use it instead of
- * the default trip progress view supported by `NavigationView`.
- *
- * Before running the example make sure you have put your access_token in the correct place
- * inside [app-preview/src/main/res/values/mapbox_access_token.xml]. If not present then add
- * this file at the location mentioned above and add the following content to it
- *
- * <?xml version="1.0" encoding="utf-8"?>
- * <resources xmlns:tools="http://schemas.android.com/tools">
- *     <string name="mapbox_access_token"><PUT_YOUR_ACCESS_TOKEN_HERE></string>
- * </resources>
- *
- * The example uses replay location engine to facilitate navigation without physically moving.
- */
 class CustomTripProgressActivity : AppCompatActivity() {
 
     private lateinit var binding: MapboxActivityCustomizeTripProgressBinding
@@ -56,9 +43,9 @@ class CustomTripProgressActivity : AppCompatActivity() {
 }
 
 class MyTripProgressComponent(
-    private val binding: MapboxTripProgressCustomLayoutBinding
+    private val binding: MapboxTripProgressCustomLayoutBinding,
+    private var testText: String = "1"
 ) : UIComponent() {
-
     override fun onAttached(mapboxNavigation: MapboxNavigation) {
         super.onAttached(mapboxNavigation)
         val distanceFormatterOptions =
@@ -76,6 +63,13 @@ class MyTripProgressComponent(
             )
             .build()
         val tripProgressApi = MapboxTripProgressApi(tripProgressFormatter)
+        binding.endNavButton.setOnClickListener {
+            mapboxNavigation.stopTripSession()
+            PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_CANCELLED)
+        }
+        binding.deliverButton.setOnClickListener {
+            PluginUtilities.sendEvent(MapBoxEvents.DELIVER_BUTTON_TAP)
+        }
         coroutineScope.launch {
             mapboxNavigation.flowRouteProgress().collect {
                 val value = tripProgressApi.getTripProgress(it)
@@ -93,7 +87,6 @@ class MyTripProgressComponent(
                     value.formatter.getTimeRemaining(value.currentLegTimeRemaining),
                     TextView.BufferType.SPANNABLE
                 )
-                binding.tripProgress.progress = (value.percentRouteTraveled * 100).toInt()
             }
         }
         coroutineScope.launch {
@@ -103,7 +96,9 @@ class MyTripProgressComponent(
     }
 }
 
-class MyTripProgressViewBinder : UIBinder {
+class MyTripProgressViewBinder(
+    private var testText: String = "2"
+) : UIBinder {
     override fun bind(viewGroup: ViewGroup): MapboxNavigationObserver {
         val scene = Scene.getSceneForLayout(
             viewGroup,
@@ -113,6 +108,6 @@ class MyTripProgressViewBinder : UIBinder {
         TransitionManager.go(scene, Fade())
 
         val binding = MapboxTripProgressCustomLayoutBinding.bind(viewGroup)
-        return MyTripProgressComponent(binding)
+        return MyTripProgressComponent(binding,testText)
     }
 }

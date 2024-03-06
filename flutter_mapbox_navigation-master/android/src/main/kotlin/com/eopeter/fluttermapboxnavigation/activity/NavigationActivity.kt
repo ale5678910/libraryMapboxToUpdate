@@ -7,11 +7,6 @@ import android.content.IntentFilter
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
-import android.transition.Fade
-import android.transition.Scene
-import android.transition.TransitionManager
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.eopeter.fluttermapboxnavigation.FlutterMapboxNavigationPlugin
 import com.eopeter.fluttermapboxnavigation.R
@@ -20,8 +15,7 @@ import com.eopeter.fluttermapboxnavigation.models.MapBoxEvents
 import com.eopeter.fluttermapboxnavigation.models.MapBoxRouteProgressEvent
 import com.eopeter.fluttermapboxnavigation.models.Waypoint
 import com.eopeter.fluttermapboxnavigation.models.WaypointSet
-import com.eopeter.fluttermapboxnavigation.utilities.CustomInfoPanelEndNavButtonBinder
-import com.eopeter.fluttermapboxnavigation.utilities.CustomInfoPanelTripProgressBinder
+import com.eopeter.fluttermapboxnavigation.utilities.MyTripProgressViewBinder
 import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
 import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities.Companion.sendEvent
 import com.google.gson.Gson
@@ -35,7 +29,6 @@ import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
 import com.mapbox.navigation.base.extensions.applyLanguageAndVoiceUnitOptions
-import com.mapbox.navigation.base.formatter.DistanceFormatterOptions
 import com.mapbox.navigation.base.options.NavigationOptions
 import com.mapbox.navigation.base.route.NavigationRoute
 import com.mapbox.navigation.base.route.NavigationRouterCallback
@@ -43,12 +36,9 @@ import com.mapbox.navigation.base.route.RouterFailure
 import com.mapbox.navigation.base.route.RouterOrigin
 import com.mapbox.navigation.base.trip.model.RouteLegProgress
 import com.mapbox.navigation.base.trip.model.RouteProgress
-import com.mapbox.navigation.core.MapboxNavigation
 import com.mapbox.navigation.core.arrival.ArrivalObserver
 import com.mapbox.navigation.core.directions.session.RoutesObserver
-import com.mapbox.navigation.core.internal.extensions.flowRouteProgress
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
-import com.mapbox.navigation.core.lifecycle.MapboxNavigationObserver
 import com.mapbox.navigation.core.trip.session.BannerInstructionsObserver
 import com.mapbox.navigation.core.trip.session.LocationMatcherResult
 import com.mapbox.navigation.core.trip.session.LocationObserver
@@ -57,17 +47,10 @@ import com.mapbox.navigation.core.trip.session.RouteProgressObserver
 import com.mapbox.navigation.core.trip.session.VoiceInstructionsObserver
 import com.mapbox.navigation.dropin.map.MapViewObserver
 import com.mapbox.navigation.dropin.navigationview.NavigationViewListener
-import com.mapbox.navigation.ui.base.lifecycle.UIBinder
-import com.mapbox.navigation.ui.base.lifecycle.UIComponent
+import com.mapbox.navigation.examples.dropinui.viewreplacement.MyInfoPanelBinder
 import com.mapbox.navigation.ui.maps.route.line.model.RouteLineColorResources
 import com.mapbox.navigation.ui.maps.route.line.model.RouteLineResources
-import com.mapbox.navigation.ui.tripprogress.api.MapboxTripProgressApi
-import com.mapbox.navigation.ui.tripprogress.model.DistanceRemainingFormatter
-import com.mapbox.navigation.ui.tripprogress.model.EstimatedTimeToArrivalFormatter
-import com.mapbox.navigation.ui.tripprogress.model.TimeRemainingFormatter
-import com.mapbox.navigation.ui.tripprogress.model.TripProgressUpdateFormatter
 import com.mapbox.navigation.utils.internal.ifNonNull
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 class NavigationActivity : AppCompatActivity() {
@@ -142,13 +125,12 @@ class NavigationActivity : AppCompatActivity() {
         // Add custom view binders
         binding.navigationView.customizeViewOptions {
             //showTripProgress = false
-            //showEndNavigationButton = false
+            showEndNavigationButton = false
         }
 
         binding.navigationView.customizeViewBinders {
-            infoPanelEndNavigationButtonBinder =
-                CustomInfoPanelEndNavButtonBinder(act)
-            infoPanelTripProgressBinder = CustomInfoPanelTripProgressBinder(act)
+            //infoPanelBinder = MyInfoPanelBinder()
+            infoPanelHeaderActiveGuidanceBinder = MyTripProgressViewBinder("3")
         }
 
         MapboxNavigationApp.current()?.registerBannerInstructionsObserver(this.bannerInstructionObserver)

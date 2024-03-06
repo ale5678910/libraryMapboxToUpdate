@@ -40,8 +40,6 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
 
         platformViewRegistry = binding.platformViewRegistry
         binaryMessenger = messenger
-
-
     }
 
     companion object {

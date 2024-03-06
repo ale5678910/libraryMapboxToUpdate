@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -14,14 +13,13 @@ import com.eopeter.fluttermapboxnavigation.models.MapBoxEvents
 import com.eopeter.fluttermapboxnavigation.models.MapBoxRouteProgressEvent
 import com.eopeter.fluttermapboxnavigation.models.Waypoint
 import com.eopeter.fluttermapboxnavigation.models.WaypointSet
-import com.eopeter.fluttermapboxnavigation.utilities.CustomInfoPanelEndNavButtonBinder
-import com.eopeter.fluttermapboxnavigation.utilities.CustomInfoPanelTripProgressBinder
+import com.eopeter.fluttermapboxnavigation.utilities.MyTripProgressViewBinder
 import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
 import com.google.gson.Gson
-import com.mapbox.maps.Style
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
+import com.mapbox.maps.Style
 import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
 import com.mapbox.navigation.base.extensions.applyLanguageAndVoiceUnitOptions
 import com.mapbox.navigation.base.options.NavigationOptions
@@ -35,7 +33,7 @@ import com.mapbox.navigation.core.arrival.ArrivalObserver
 import com.mapbox.navigation.core.directions.session.RoutesObserver
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
 import com.mapbox.navigation.core.trip.session.*
-import com.mapbox.navigation.ui.maps.route.line.model.RouteLineColorResources
+import com.mapbox.navigation.examples.dropinui.viewreplacement.MyInfoPanelBinder
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -49,7 +47,6 @@ open class TurnByTurn(
 ) : MethodChannel.MethodCallHandler,
     EventChannel.StreamHandler,
     Application.ActivityLifecycleCallbacks {
-
 
     open fun initFlutterChannelHandlers() {
         this.methodChannel?.setMethodCallHandler(this)
@@ -152,16 +149,12 @@ open class TurnByTurn(
                         this@TurnByTurn.simulateRoute
                     )
                     this@TurnByTurn.binding.navigationView.api.startRoutePreview(routes)
-                    this@TurnByTurn.binding.navigationView.customizeViewBinders {
-                        this.infoPanelBinder
-                    }
                     this@TurnByTurn.binding.navigationView.customizeViewOptions {
-                        //showTripProgress = false
-                        //showEndNavigationButton = false
+                        showEndNavigationButton = false
                     }
                     this@TurnByTurn.binding.navigationView.customizeViewBinders {
-                        this.infoPanelEndNavigationButtonBinder = CustomInfoPanelEndNavButtonBinder(activity)
-                        this.infoPanelTripProgressBinder = CustomInfoPanelTripProgressBinder(activity)
+                        this.infoPanelHeaderActiveGuidanceBinder = MyTripProgressViewBinder("4")
+                        //this.infoPanelBinder = MyInfoPanelBinder()
                     }
                 }
 

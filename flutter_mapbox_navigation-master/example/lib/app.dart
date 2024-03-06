@@ -11,8 +11,7 @@ class SampleNavigationApp extends StatefulWidget {
 }
 
 class _SampleNavigationAppState extends State<SampleNavigationApp> {
-  String? _platformVersion;
-  String? _instruction;
+
   final _origin = WayPoint(
       name: "Way Point 1",
       latitude: 38.9111117447887,
@@ -51,6 +50,8 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
       longitude: -122.42409811526268,
       isSilent: false);
 
+  String? _platformVersion;
+  String? _instruction;
   bool _isMultipleStop = false;
   double? _distanceRemaining, _durationRemaining;
   MapBoxNavigationViewController? _controller;
